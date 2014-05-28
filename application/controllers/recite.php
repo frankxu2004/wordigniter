@@ -39,34 +39,7 @@ class Recite extends Controller
     {
     	if (isset($_POST['field']) AND !empty($_POST['field'])) {
     		$recite_model = $this->loadModel('Recite');
-    		$recite_model->create($_POST['field']);
-    	}
-    	header('location: ' . URL . 'recite/plan');
-    }
-    
-    public function editPlan($plan_id)
-    {
-    	if (isset($plan_id)) {
-    		// get the note that you want to edit (to show the current content)
-    		$recite_model = $this->loadModel('Recite');
-    		$this->view->note = $note_model->getPlan($plan_id);
-    		$this->view->render('recite/editPlan');
-    	} else {
-    		header('location: ' . URL . 'recite/plan');
-    	}
-    }
-    
-    /**
-     * This method controls what happens when you move to /note/editsave(/XX) in your app.
-     * Edits a note (performs the editing after form submit).
-     * @param int $plan_id id of the note
-     */
-    public function editSave($plan_id)
-    {
-    	if (isset($_POST['field']) && isset($plan_id)) {
-    		// perform the update: pass plan_id from URL and field from POST
-    		$recite_model = $this->loadModel('Recite');
-    		$recite_model->editSave($plan_id, $_POST['field']);
+    		$recite_model->createPlan($_POST['field'], $_POST['due']);
     	}
     	header('location: ' . URL . 'recite/plan');
     }
@@ -85,6 +58,5 @@ class Recite extends Controller
     	}
     	header('location: ' . URL . 'recite/plan');
     }
-    
 
 }

@@ -22,7 +22,7 @@ class ReciteModel
      */
     public function getAllPlans()
     {
-        $sql = "SELECT user_id, plan_id, field FROM reciteplans WHERE user_id = :user_id";
+        $sql = "SELECT user_id, plan_id, field, due FROM reciteplans WHERE user_id = :user_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':user_id' => $_SESSION['user_id']));
 
@@ -37,7 +37,7 @@ class ReciteModel
      */
     public function getPlan($plan_id)
     {
-        $sql = "SELECT user_id, plan_id, field FROM reciteplans WHERE user_id = :user_id AND plan_id = :plan_id";
+        $sql = "SELECT user_id, plan_id, field, due FROM reciteplans WHERE user_id = :user_id AND plan_id = :plan_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':user_id' => $_SESSION['user_id'], ':plan_id' => $plan_id));
 
@@ -50,40 +50,16 @@ class ReciteModel
      * @param string $field note text that will be created
      * @return bool feedback (was the note created properly ?)
      */
-    public function create($field)
+    public function createPlan($field, $due)
     {
-        $sql = "INSERT INTO reciteplans (field, user_id) VALUES (:field, :user_id)";
+        $sql = "INSERT INTO reciteplans (field, due, user_id) VALUES (:field, :due, :user_id)";
         $query = $this->db->prepare($sql);
-        $query->execute(array(':field' => $field, ':user_id' => $_SESSION['user_id']));
-
+        $query->execute(array(':field' => $field, ':due' => $due, ':user_id' => $_SESSION['user_id']));
         $count =  $query->rowCount();
         if ($count == 1) {
             return true;
         } else {
             $_SESSION["feedback_negative"][] = FEEDBACK_NOTE_CREATION_FAILED;
-        }
-        // default return
-        return false;
-    }
-
-    /**
-     * Setter for a note (update)
-     * @param int $plan_id id of the specific note
-     * @param string $field new text of the specific note
-     * @return bool feedback (was the update successful ?)
-     */
-    public function editSave($plan_id, $field)
-    {
-
-        $sql = "UPDATE reciteplans SET field = :field WHERE plan_id = :plan_id AND user_id = :user_id";
-        $query = $this->db->prepare($sql);
-        $query->execute(array(':plan_id' => $plan_id, ':field' => $field, ':user_id' => $_SESSION['user_id']));
-
-        $count =  $query->rowCount();
-        if ($count == 1) {
-            return true;
-        } else {
-            $_SESSION["feedback_negative"][] = FEEDBACK_NOTE_EDITING_FAILED;
         }
         // default return
         return false;
