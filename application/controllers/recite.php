@@ -37,7 +37,7 @@ class Recite extends Controller
     
     public function createPlan()
     {
-    	if (isset($_POST['field']) AND !empty($_POST['field'])) {
+    	if (isset($_POST['field']) AND !empty($_POST['field']) AND isset($_POST['due']) AND !empty($_POST['due'])) {
     		$recite_model = $this->loadModel('Recite');
     		$recite_model->createPlan($_POST['field'], $_POST['due']);
     	}
@@ -54,7 +54,7 @@ class Recite extends Controller
     {
     	if (isset($plan_id)) {
     		$recite_model = $this->loadModel('Recite');
-    		$recite_model->delete($plan_id);
+    		$recite_model->deletePlan($plan_id);
     	}
     	header('location: ' . URL . 'recite/plan');
     }

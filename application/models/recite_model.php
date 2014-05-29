@@ -51,39 +51,65 @@ class ReciteModel
      * @return bool feedback (was the note created properly ?)
      */
     public function createPlan($field, $due)
-    {
+    {    	
         $sql = "INSERT INTO reciteplans (field, due, user_id) VALUES (:field, :due, :user_id)";
         $query = $this->db->prepare($sql);
         $query->execute(array(':field' => $field, ':due' => $due, ':user_id' => $_SESSION['user_id']));
         $count =  $query->rowCount();
         if ($count == 1) {
+        	$plan_id = $this->db->lastInsertId();
+        	$tablename = 'reciteplan'.$plan_id;
+        	$this->createPlanTable($tablename);
+        	$this->initPlanTable($field, $tablename);
             return true;
         } else {
             $_SESSION["feedback_negative"][] = FEEDBACK_NOTE_CREATION_FAILED;
         }
+        
         // default return
         return false;
     }
-
+    
     /**
      * Deletes a specific note
      * @param int $plan_id id of the note
      * @return bool feedback (was the note deleted properly ?)
      */
-    public function delete($plan_id)
+    public function deletePlan($plan_id)
     {
         $sql = "DELETE FROM reciteplans WHERE plan_id = :plan_id AND user_id = :user_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':plan_id' => $plan_id, ':user_id' => $_SESSION['user_id']));
-
         $count =  $query->rowCount();
-
         if ($count == 1) {
+        	$tablename = 'reciteplan'.$plan_id;
+        	$this->deletePlanTable($tablename);
             return true;
         } else {
             $_SESSION["feedback_negative"][] = FEEDBACK_NOTE_DELETION_FAILED;
         }
         // default return
         return false;
+    }
+    
+    public function createPlanTable($tablename)
+    {
+    	$sql = "CREATE TABLE $tablename (word_id INT PRIMARY KEY, w0 DECIMAL, w DECIMAL)";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    }
+    
+    public function initPlanTable($field, $tablename)
+    {
+    	$sql = "INSERT INTO $tablename (word_id) SELECT word_id FROM $field";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    }
+    
+    public function deletePlanTable($tablename)
+    {
+    	$sql = "DROP TABLE $tablename";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
     }
 }
