@@ -20,7 +20,7 @@ ini_set("display_errors", 1);
  * if you are using a (different) port, then put this in here, like http://mydomain:8888/subfolder/
  * Note: The trailing slash is important!
  */
-define('URL', 'http://59.78.48.1/');
+define('URL', 'http://127.0.0.1/');
 
 /**
  * Configuration for: Folders
@@ -72,7 +72,7 @@ define('AVATAR_DEFAULT_IMAGE', 'default.jpg');
 define('COOKIE_RUNTIME', 1209600);
 // the domain where the cookie is valid for, for local development ".127.0.0.1" and ".localhost" will work
 // IMPORTANT: always put a dot in front of the domain, like ".mydomain.com" !
-define('COOKIE_DOMAIN', '.59.78.48.1');
+define('COOKIE_DOMAIN', '.127.0.0.1');
 
 /**
  * Configuration for: Database

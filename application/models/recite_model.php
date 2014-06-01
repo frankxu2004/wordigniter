@@ -25,7 +25,6 @@ class ReciteModel
         $sql = "SELECT user_id, plan_id, field, due FROM reciteplans WHERE user_id = :user_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':user_id' => $_SESSION['user_id']));
-
         // fetchAll() is the PDO method that gets all result rows
         return $query->fetchAll();
     }
@@ -94,7 +93,7 @@ class ReciteModel
     
     public function createPlanTable($tablename)
     {
-    	$sql = "CREATE TABLE $tablename (word_id INT PRIMARY KEY, w0 DECIMAL, w DECIMAL)";
+    	$sql = "CREATE TABLE $tablename (word_id INT PRIMARY KEY, w0 DECIMAL(4,3), w DECIMAL(4,3))";
     	$query = $this->db->prepare($sql);
     	$query->execute();
     }
@@ -112,4 +111,149 @@ class ReciteModel
     	$query = $this->db->prepare($sql);
     	$query->execute();
     }
+    
+    public function retrieveWords($plan_id)
+    {
+    	$sql = "SELECT field, due FROM reciteplans WHERE plan_id = :plan_id";
+    	$query = $this->db->prepare($sql);
+    	$query->execute(array(':plan_id' => $plan_id));
+    	$result = $query->fetch();
+    	$dueDate = new DateTime($result->due);
+    	$field = $result->field;
+    	$nowDate = new DateTime();
+    	$interval = $nowDate->diff($dueDate);
+    	$intervalDays = $interval->days+1;
+    	$tablename = 'reciteplan'.$plan_id;
+    	$sql = "SELECT COUNT(*) FROM $tablename";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    	$numWords = $query->fetchColumn();
+    	$num = ceil($numWords/$intervalDays);
+    	
+    	$sql = "SELECT $field.word_id, $field.word, $field.definition, $field.root, $field.example 
+    			FROM $field INNER JOIN $tablename ON $field.word_id = $tablename.word_id 
+    			ORDER BY $tablename.w, $tablename.word_id 
+    			LIMIT $num";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    	return($query->fetchAll());
+    }
+    
+    public function saveWeight($plan_id, $word_id, $steps, $hasRoot) {
+    	$tablename = 'reciteplan'.$plan_id;
+    	$sql = "SELECT w FROM $tablename WHERE word_id = $word_id";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    	$w = $query->fetchColumn();
+    	if ($w != NULL) {
+    		$w = $this->calculateWeight($w, $hasRoot, $steps);
+    		if ($w<0.9) {
+	    		$sql = "UPDATE $tablename SET w = $w WHERE word_id = $word_id";
+	    		$query = $this->db->prepare($sql);
+	    		$query->execute();
+    		}
+    		else {
+    			$sql = "DELETE FROM $tablename WHERE word_id = $word_id";
+    			$query = $this->db->prepare($sql);
+    			$query->execute();
+    		}
+    	}
+    	else {
+    		$w = $this->initWeight($hasRoot, $steps);
+    		if ($w<0.9) {
+	    		$sql = "UPDATE $tablename SET w0 = $w, w = $w WHERE word_id = $word_id";
+	    		$query = $this->db->prepare($sql);
+	    		$query->execute();
+    		}
+    		else {
+	    		$sql = "DELETE FROM $tablename WHERE word_id = $word_id";
+	    		$query = $this->db->prepare($sql);
+	    		$query->execute();
+    		}
+    	}
+    	
+    }
+	
+    public function initWeight($hasRoot, $steps) {
+    	if ($hasRoot == 1) {
+    		switch ($steps) {
+    			case 1: $w=0.9; break;
+    			case 2: $w=0.6; break;
+    			case 3: $w=0.4; break;
+    			case 4: $w=0.3; break;
+    			case 5: $w=0; break;
+    		}
+    	}
+    	else {
+    		switch ($steps) {
+    			case 1: $w=0.9; break;
+    			case 2: $w=0.5; break;
+    			case 3: $w=0.35; break;
+    			case 4: $w=0; break;
+    		}
+    	}
+    	return $w;
+    }
+    
+    public function calculateWeight($w, $hasRoot, $steps){
+    	if ($w<0.5) {
+    		if ($hasRoot == 1) {
+    			switch ($steps) {
+    				case 1: $w=0.8; break;
+    				case 2: $w=0.5; break;
+    				case 3: $w=0.4; break;
+    				case 4: $w=0.3; break;
+    				case 5: $w=0; break;
+    			}
+    		}
+    		else {
+    			switch ($steps) {
+    				case 1: $w=0.8; break;
+    				case 2: $w=0.5; break;
+    				case 3: $w=0.35; break;
+    				case 4: $w=0; break;
+    			}
+    		}
+    	}
+    	elseif ($w>=0.5 && $w<0.8) {
+    		if ($hasRoot == 1) {
+    			switch ($steps) {
+    				case 1: $w=0.81; break;
+    				case 2: $w=0.5+0.2*$w; break;
+    				case 3: $w=0.4; break;
+    				case 4: $w=0.3; break;
+    				case 5: $w=0; break;
+    			}
+    		}
+    		else {
+    			switch ($steps) {
+    				case 1: $w=0.81; break;
+    				case 2: $w=0.5; break;
+    				case 3: $w=0.35; break;
+    				case 4: $w=0; break;
+    			}
+    		}
+    	}
+    	elseif ($w>=0.8 && $w<0.9) {
+    		if ($hasRoot == 1) {
+    			switch ($steps) {
+    				case 1: $w=1.1*$w; break;
+    				case 2: $w=0.6; break;
+    				case 3: $w=0.4; break;
+    				case 4: $w=0.3; break;
+    				case 5: $w=0; break;
+    			}
+    		}
+    		else {
+    			switch ($steps) {
+    				case 1: $w=1.1*$w; break;
+    				case 2: $w=0.5; break;
+    				case 3: $w=0.35; break;
+    				case 4: $w=0; break;
+    			}
+    		}
+    	}
+    	return $w;
+    }
+
 }

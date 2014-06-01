@@ -25,6 +25,8 @@ class Recite extends Controller
      */
     public function index()
     {
+    	$recite_model = $this->loadModel('Recite');
+    	$this->view->plans = $recite_model->getAllPlans();
         $this->view->render('recite/index');
     }
 
@@ -58,5 +60,27 @@ class Recite extends Controller
     	}
     	header('location: ' . URL . 'recite/plan');
     }
-
+    
+    public function doPlan($plan_id)
+    {
+    	if (isset($plan_id)) {
+    		$recite_model = $this->loadModel('Recite');
+    		$this->view->plan_id = $plan_id;
+    		$this->view->currentWords = $recite_model->retrieveWords($plan_id);
+    		$this->view->render('recite/start');
+    	}
+    	else {
+    		header('location: ' . URL . 'recite/plan');
+    	}
+    }
+    
+    public function saveWeight() {
+    	$recite_model = $this->loadModel('Recite');
+    	$plan_id = $_POST['plan_id'];
+    	$word_id = $_POST['word_id'];
+    	$steps = $_POST['steps'];
+    	$hasRoot = $_POST['hasRoot'];
+    	$recite_model->saveWeight($plan_id, $word_id, $steps, $hasRoot);
+    	
+    }
 }
