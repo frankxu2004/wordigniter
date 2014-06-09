@@ -25,7 +25,6 @@ class ReciteModel
         $sql = "SELECT user_id, plan_id, field, due FROM reciteplans WHERE user_id = :user_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':user_id' => $_SESSION['user_id']));
-        // fetchAll() is the PDO method that gets all result rows
         return $query->fetchAll();
     }
 
@@ -39,8 +38,6 @@ class ReciteModel
         $sql = "SELECT user_id, plan_id, field, due FROM reciteplans WHERE user_id = :user_id AND plan_id = :plan_id";
         $query = $this->db->prepare($sql);
         $query->execute(array(':user_id' => $_SESSION['user_id'], ':plan_id' => $plan_id));
-
-        // fetch() is the PDO method that gets a single result
         return $query->fetch();
     }
 
@@ -118,11 +115,11 @@ class ReciteModel
     	$query = $this->db->prepare($sql);
     	$query->execute(array(':plan_id' => $plan_id));
     	$result = $query->fetch();
-    	$dueDate = new DateTime($result->due);
     	$field = $result->field;
+    	$dueDate = new DateTime($result->due);
     	$nowDate = new DateTime();
     	$interval = $nowDate->diff($dueDate);
-    	$intervalDays = $interval->days+1;
+    	$intervalDays = $interval->days;
     	$tablename = 'reciteplan'.$plan_id;
     	$sql = "SELECT COUNT(*) FROM $tablename";
     	$query = $this->db->prepare($sql);
@@ -130,13 +127,73 @@ class ReciteModel
     	$numWords = $query->fetchColumn();
     	$num = ceil($numWords/$intervalDays);
     	
-    	$sql = "SELECT $field.word_id, $field.word, $field.definition, $field.root, $field.example 
+    	$sql = "SELECT $field.word_id, $field.word, $field.definition, $field.root, $field.example, $tablename.w  
     			FROM $field INNER JOIN $tablename ON $field.word_id = $tablename.word_id 
     			ORDER BY $tablename.w, $tablename.word_id 
     			LIMIT $num";
     	$query = $this->db->prepare($sql);
     	$query->execute();
     	return($query->fetchAll());
+    }
+    
+    public function judgePlanState($plan_id)
+    {
+    	$tablename = 'reciteplan'.$plan_id;
+    	$sql = "SELECT MIN(IFNULL(w,0)) FROM $tablename";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    	$minWeight = $query->fetchColumn();
+    	if ($minWeight>=0.5) {
+    		$sql = "SELECT AVG(IFNULL(w,0)) FROM $tablename";
+    		$query = $this->db->prepare($sql);
+    		$query->execute();
+    		$avgWeight = $query->fetchColumn();
+    		if ($avgWeight>0.8) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public function judgePlanExpire($due, $plan_id)
+    {
+    	$dueDate = new DateTime($due);
+    	$nowDate = new DateTime();
+    	if ($nowDate > $dueDate){
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
+    public function judgePlanTodayFinish($lastFinish)
+    {
+    	$nowDateTime = new DateTime();
+    	$nowDate = $nowDateTime->format('Y-m-d');
+    	if ($lastFinish == $nowDate) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
+    public function getLastFinish($plan_id) {
+    	$sql = "SELECT last_finish FROM reciteplans WHERE plan_id = $plan_id";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
+    	$lastFinish = $query->fetchColumn();
+    	return $lastFinish;
+    }
+    
+    public function saveDate($plan_id)
+    {
+    	$nowDate = new DateTime();
+    	$date = $nowDate->format('Y-m-d');
+    	$sql = "UPDATE reciteplans SET last_finish = '$date' WHERE plan_id = $plan_id";
+    	$query = $this->db->prepare($sql);
+    	$query->execute();
     }
     
     public function saveWeight($plan_id, $word_id, $steps, $hasRoot) {
@@ -151,11 +208,13 @@ class ReciteModel
 	    		$sql = "UPDATE $tablename SET w = $w WHERE word_id = $word_id";
 	    		$query = $this->db->prepare($sql);
 	    		$query->execute();
+	    		return $w;
     		}
     		else {
     			$sql = "DELETE FROM $tablename WHERE word_id = $word_id";
     			$query = $this->db->prepare($sql);
     			$query->execute();
+    			return -1;
     		}
     	}
     	else {
@@ -164,11 +223,13 @@ class ReciteModel
 	    		$sql = "UPDATE $tablename SET w0 = $w, w = $w WHERE word_id = $word_id";
 	    		$query = $this->db->prepare($sql);
 	    		$query->execute();
+	    		return $w;
     		}
     		else {
 	    		$sql = "DELETE FROM $tablename WHERE word_id = $word_id";
 	    		$query = $this->db->prepare($sql);
 	    		$query->execute();
+	    		return -1;
     		}
     	}
     	

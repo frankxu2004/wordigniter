@@ -82,7 +82,7 @@ p {
 }
 
 .content a {
-    text-decoration: underline;
+    
     color: #2C2F3B;
 }
 
@@ -126,6 +126,7 @@ table td {
     border: 1px solid green;
     color: green;
 }
+
 
 /*Initialize*/
 ul#menu, ul#menu ul.sub-menu {

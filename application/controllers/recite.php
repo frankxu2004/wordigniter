@@ -12,7 +12,6 @@ class Recite extends Controller
     public function __construct()
     {
         parent::__construct();
-
         // VERY IMPORTANT: All controllers/areas that should only be usable by logged-in users
         // need this line! Otherwise not-logged in users could do actions. If all of your pages should only
         // be usable by logged-in users: Put this line into libs/Controller->__construct
@@ -26,14 +25,51 @@ class Recite extends Controller
     public function index()
     {
     	$recite_model = $this->loadModel('Recite');
-    	$this->view->plans = $recite_model->getAllPlans();
+    	$plans = $recite_model->getAllPlans();
+    	$this->view->plans = $plans;
+    	if ($plans) {
+	    	foreach($plans as $key => $value) {
+	    		if ($recite_model->judgePlanExpire($value->due, $value->plan_id)) {
+	    			$planState[$value->plan_id][0] = '过期';
+	    		}
+	    		else {
+	    			if ($recite_model->judgePlanState($value->plan_id)) {
+	    				$planState[$value->plan_id][0] = '已完成';
+	    			}
+	    			else {
+	    				$planState[$value->plan_id][0] = '未完成';
+	    			}
+	    		}
+	    		$lastFinish = $recite_model->getLastFinish($value->plan_id);
+	    		$planState[$value->plan_id][1] = $lastFinish;
+	    		$planState[$value->plan_id][2] = $recite_model->judgePlanTodayFinish($lastFinish);
+	    	}
+	    	$this->view->planState = $planState;
+    	}
         $this->view->render('recite/index');
     }
 
     public function plan()
     {
     	$recite_model = $this->loadModel('Recite');
-    	$this->view->plans = $recite_model->getAllPlans();
+    	$plans = $recite_model->getAllPlans();
+    	$this->view->plans = $plans;
+    	if ($plans) {
+	    	foreach($plans as $key => $value) {
+	    		if ($recite_model->judgePlanExpire($value->due, $value->plan_id)) {
+	    			$planState[$value->plan_id] = '过期';
+	    		}
+	    		else {
+	    			if ($recite_model->judgePlanState($value->plan_id)) {
+	    				$planState[$value->plan_id] = '已完成';
+	    			}
+	    			else {
+	    				$planState[$value->plan_id] = '未完成';
+	    			}
+	    		}
+	    	}
+    		$this->view->planState = $planState;
+    	}
     	$this->view->render('recite/plan');
     }
     
@@ -80,7 +116,15 @@ class Recite extends Controller
     	$word_id = $_POST['word_id'];
     	$steps = $_POST['steps'];
     	$hasRoot = $_POST['hasRoot'];
-    	$recite_model->saveWeight($plan_id, $word_id, $steps, $hasRoot);
-    	
+    	$w = $recite_model->saveWeight($plan_id, $word_id, $steps, $hasRoot);
+    	echo $w;
+        
     }
+    
+    public function saveDate() {
+    	$recite_model = $this->loadModel('Recite');
+    	$plan_id = $_POST['plan_id'];
+    	$recite_model->saveDate($plan_id);
+    }
+    
 }

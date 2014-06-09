@@ -5,6 +5,7 @@
     <!-- echo out the system feedback (error and success messages) -->
     <?php $this->renderFeedbackMessages(); ?>
 
+    
     <?php if ($this->user) { ?>
         <p>
             <span style="color: red;">NOTE: be sure NOT to show email addresses of users in a real app. This is just a demo.</span>
@@ -27,4 +28,5 @@
             </table>
         </p>
     <?php } ?>
+
 </div>

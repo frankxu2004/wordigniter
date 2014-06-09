@@ -151,17 +151,17 @@ define("PHPMAILER_DEBUG_MODE", 0);
 // use SMTP or basic mail() ? SMTP is strongly recommended
 define("EMAIL_USE_SMTP", true);
 // name of your host
-define("EMAIL_SMTP_HOST", 'smtp.163.com');
+define("EMAIL_SMTP_HOST", 'mail.sjtu.edu.cn');
 // leave this true until your SMTP can be used without login
 define("EMAIL_SMTP_AUTH", true);
 // SMTP provider username
-define("EMAIL_SMTP_USERNAME", 'fzxu2004@163.com');
+define("EMAIL_SMTP_USERNAME", 'frankxu');
 // SMTP provider password
 define("EMAIL_SMTP_PASSWORD", 'xfz84893508');
 // SMTP provider port
-define("EMAIL_SMTP_PORT", 465);
+define("EMAIL_SMTP_PORT", 25);
 // SMTP encryption, usually SMTP providers use "tls" or "ssl", for details see the PHPMailer manual
-define("EMAIL_SMTP_ENCRYPTION", 'ssl');
+define("EMAIL_SMTP_ENCRYPTION", 'tls');
 
 /**
  * Configuration for: Email content data
@@ -186,15 +186,15 @@ define("EMAIL_SMTP_ENCRYPTION", 'ssl');
  * define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account:");
  */
 define("EMAIL_PASSWORD_RESET_URL", URL . "login/verifypasswordreset");
-define("EMAIL_PASSWORD_RESET_FROM_EMAIL", "fzxu2004@163.com");
-define("EMAIL_PASSWORD_RESET_FROM_NAME", "My Project");
-define("EMAIL_PASSWORD_RESET_SUBJECT", "Password reset for PROJECT XY");
+define("EMAIL_PASSWORD_RESET_FROM_EMAIL", "frankxu@sjtu.edu.cn");
+define("EMAIL_PASSWORD_RESET_FROM_NAME", "Word Igniter");
+define("EMAIL_PASSWORD_RESET_SUBJECT", "Password reset for Word Igniter");
 define("EMAIL_PASSWORD_RESET_CONTENT", "Please click on this link to reset your password: ");
 
 define("EMAIL_VERIFICATION_URL", URL . "login/verify");
-define("EMAIL_VERIFICATION_FROM_EMAIL", "fzxu2004@163.com");
-define("EMAIL_VERIFICATION_FROM_NAME", "My Project");
-define("EMAIL_VERIFICATION_SUBJECT", "Account activation for PROJECT XY");
+define("EMAIL_VERIFICATION_FROM_EMAIL", "frankxu@sjtu.edu.cn");
+define("EMAIL_VERIFICATION_FROM_NAME", "Word Igniter");
+define("EMAIL_VERIFICATION_SUBJECT", "Account activation for Word Igniter");
 define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account: ");
 
 /**
@@ -202,13 +202,13 @@ define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your
  *
  * In this project, the error messages, notices etc are all-together called "feedback".
  */
-define("FEEDBACK_UNKNOWN_ERROR", "Unknown error occurred!");
+define("FEEDBACK_UNKNOWN_ERROR", "未知错误发生!");
 define("FEEDBACK_PASSWORD_WRONG_3_TIMES", "You have typed in a wrong password 3 or more times already. Please wait 30 seconds to try again.");
-define("FEEDBACK_ACCOUNT_NOT_ACTIVATED_YET", "Your account is not activated yet. Please click on the confirm link in the mail.");
-define("FEEDBACK_PASSWORD_WRONG", "Password was wrong.");
-define("FEEDBACK_USER_DOES_NOT_EXIST", "This user does not exist.");
+define("FEEDBACK_ACCOUNT_NOT_ACTIVATED_YET", "你的账户还没有邮箱认证！快去你的邮箱看看吧~");
+define("FEEDBACK_PASSWORD_WRONG", "密码错误.");
+define("FEEDBACK_USER_DOES_NOT_EXIST", "这个账号不存在.");
 // The "login failed"-message is a security improved feedback that doesn't show a potential attacker if the user exists or not
-define("FEEDBACK_LOGIN_FAILED", "Login failed.");
+define("FEEDBACK_LOGIN_FAILED", "登录失败.");
 define("FEEDBACK_USERNAME_FIELD_EMPTY", "Username field was empty.");
 define("FEEDBACK_PASSWORD_FIELD_EMPTY", "Password field was empty.");
 define("FEEDBACK_EMAIL_FIELD_EMPTY", "Email and passwords fields were empty.");
@@ -227,7 +227,7 @@ define("FEEDBACK_PASSWORD_REPEAT_WRONG", "Password and password repeat are not t
 define("FEEDBACK_PASSWORD_TOO_SHORT", "Password has a minimum length of 6 characters.");
 define("FEEDBACK_USERNAME_TOO_SHORT_OR_TOO_LONG", "Username cannot be shorter than 2 or longer than 64 characters.");
 define("FEEDBACK_EMAIL_TOO_LONG", "Email cannot be longer than 64 characters.");
-define("FEEDBACK_ACCOUNT_SUCCESSFULLY_CREATED", "Your account has been created successfully and we have sent you an email. Please click the VERIFICATION LINK within that mail.");
+define("FEEDBACK_ACCOUNT_SUCCESSFULLY_CREATED", "账户已经成功创建！认证邮件已发送. 请登录邮箱确认.");
 define("FEEDBACK_VERIFICATION_MAIL_SENDING_FAILED", "Sorry, we could not send you an verification mail. Your account has NOT been created.");
 define("FEEDBACK_ACCOUNT_CREATION_FAILED", "Sorry, your registration failed. Please go back and try again.");
 define("FEEDBACK_VERIFICATION_MAIL_SENDING_ERROR", "Verification mail could not be sent due to: ");
