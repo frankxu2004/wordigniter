@@ -151,13 +151,13 @@ define("PHPMAILER_DEBUG_MODE", 0);
 // use SMTP or basic mail() ? SMTP is strongly recommended
 define("EMAIL_USE_SMTP", true);
 // name of your host
-define("EMAIL_SMTP_HOST", 'mail.sjtu.edu.cn');
+define("EMAIL_SMTP_HOST", '');
 // leave this true until your SMTP can be used without login
 define("EMAIL_SMTP_AUTH", true);
 // SMTP provider username
-define("EMAIL_SMTP_USERNAME", 'frankxu');
+define("EMAIL_SMTP_USERNAME", '');
 // SMTP provider password
-define("EMAIL_SMTP_PASSWORD", 'xfz84893508');
+define("EMAIL_SMTP_PASSWORD", '');
 // SMTP provider port
 define("EMAIL_SMTP_PORT", 25);
 // SMTP encryption, usually SMTP providers use "tls" or "ssl", for details see the PHPMailer manual
@@ -186,13 +186,13 @@ define("EMAIL_SMTP_ENCRYPTION", 'tls');
  * define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account:");
  */
 define("EMAIL_PASSWORD_RESET_URL", URL . "login/verifypasswordreset");
-define("EMAIL_PASSWORD_RESET_FROM_EMAIL", "frankxu@sjtu.edu.cn");
+define("EMAIL_PASSWORD_RESET_FROM_EMAIL", "");
 define("EMAIL_PASSWORD_RESET_FROM_NAME", "Word Igniter");
 define("EMAIL_PASSWORD_RESET_SUBJECT", "Password reset for Word Igniter");
 define("EMAIL_PASSWORD_RESET_CONTENT", "Please click on this link to reset your password: ");
 
 define("EMAIL_VERIFICATION_URL", URL . "login/verify");
-define("EMAIL_VERIFICATION_FROM_EMAIL", "frankxu@sjtu.edu.cn");
+define("EMAIL_VERIFICATION_FROM_EMAIL", "");
 define("EMAIL_VERIFICATION_FROM_NAME", "Word Igniter");
 define("EMAIL_VERIFICATION_SUBJECT", "Account activation for Word Igniter");
 define("EMAIL_VERIFICATION_CONTENT", "Please click on this link to activate your account: ");
